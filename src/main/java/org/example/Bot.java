@@ -1,5 +1,7 @@
 package org.example;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,8 +14,13 @@ import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
 
+    private String pathScanFolder = "O:\\Печать в Печатном центре";
+
+    private static Logger logger = LogManager.getLogger(Bot.class);
+
     private List<String> list1 = new ArrayList<>();
     private List<String> list2 = new ArrayList<>();
+
 
     private String folderDone = "Выполнено";
     private String txtFile1 = "!!!_Переименовывать файлы и папки только на своих компьютерах.txt";
@@ -28,12 +35,14 @@ public class Bot extends TelegramLongPollingBot {
         return "gapu_print_bot";
     }
 
+
     @Override
     public String getBotToken() {
         return "6278798754:AAGwq2cW3AcxiKScf051aC9gfhAPbDvdnts";
     }
 
-    //Метод для ответов
+
+    //Метод для ответов в телеграм
     public void sendText(Long who, String what){
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())     //Who are we sending a message to
@@ -54,30 +63,35 @@ public class Bot extends TelegramLongPollingBot {
         long userId = message.getFrom().getId();
 
         if (message.getText().equals("/start")) {
+            logger.info("scan folder after /start");
+
             sendText(userId, "Добро пожаловать в бот");
             scanFolderProcess(userId);
 
         } else {
+            logger.info("scan folder after any message");
+
             scanFolderProcess(userId);
-            
         }
     }
 
+
+    //Метод сканирования директории
     private void scanFolderProcess(long userId) {
 
-        File file = new File("O:\\Печать в Печатном центре");
+
+        File file = new File(pathScanFolder);
         StringBuilder stringBuilder = new StringBuilder();
 
         int number = 0;
 
         while (true) {
 
+            logger.info("start scan folder in cycle 'while'");
             try {
                 Thread.sleep(2000);
                 String[] files = file.list();
                 list2.clear();
-                System.out.println("начало list 1: " + list1.size() + " элементов");
-                System.out.println("начало list 2: " + list2.size() + " элементов");
 
                 for (int i = 0; i < files.length; i++) {
 
@@ -96,8 +110,6 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
 
-
-                System.out.println("после 1 цикла list 2: " + list2.size() + " элементов");
 
                 if (list2.size() > 0) {
                     for (String name : list2) {
@@ -120,7 +132,7 @@ public class Bot extends TelegramLongPollingBot {
                     list1.add(files[i]);
                 }
 
-                System.out.println("новый list 1: " + list1.size() + " элементов");
+                logger.info("finish scan folder");
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

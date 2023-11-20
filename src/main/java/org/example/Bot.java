@@ -64,13 +64,11 @@ public class Bot extends TelegramLongPollingBot {
 
         if (message.getText().equals("/start")) {
             logger.info("scan folder after /start");
-
             sendText(userId, "Добро пожаловать в бот");
             scanFolderProcess(userId);
 
         } else {
             logger.info("scan folder after any message");
-
             scanFolderProcess(userId);
         }
     }
@@ -85,9 +83,9 @@ public class Bot extends TelegramLongPollingBot {
 
         int number = 0;
 
+        logger.info("start scan folder in cycle 'while'");
         while (true) {
 
-            logger.info("start scan folder in cycle 'while'");
             try {
                 Thread.sleep(2000);
                 String[] files = file.list();
@@ -110,7 +108,6 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
 
-
                 if (list2.size() > 0) {
                     for (String name : list2) {
                         number = number + 1;
@@ -131,8 +128,6 @@ public class Bot extends TelegramLongPollingBot {
                 for (int i = 0; i < files.length; i++) {
                     list1.add(files[i]);
                 }
-
-                logger.info("finish scan folder");
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
